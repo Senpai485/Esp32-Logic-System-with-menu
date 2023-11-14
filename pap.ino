@@ -12,20 +12,17 @@ String message = "";
 char incomingChar;
 
 
-float x = 0;
-int ldrValue = 0;
+int value = 0;
 void setup()
 {
   Serial.begin(115200);
   while (!Serial);
 
-  SerialBT.begin("IntelliVest");
+  SerialBT.begin("Senpai"); // Nome Para o bluetooth
   Serial.println("Pronto");
-  pinMode(LED_PIN, OUTPUT);
-  pinMode(LED_PIN1, OUTPUT);
-  pinMode(LED_PIN2, OUTPUT);
-  Wire.begin();
-  initializeADXL();
+  
+
+  
 }
 
 void loop()
@@ -50,10 +47,6 @@ void loop()
     Serial.write(incomingChar);
   }
 
-  x = readX();
-  ldrValue = analogRead(LDR_PIN);
-  checkValue();
-  ldr();
   fact();
   act();
 
@@ -62,88 +55,7 @@ void loop()
 
 // Funções
 
-void initializeADXL()
-{
-  writeRegister(0x2C, 0x08);
-  writeRegister(0x31, 0x08);
-  writeRegister(0x2D, 0x08);
-}
 
-void writeRegister(byte reg, byte value)
-{
-  Wire.beginTransmission(ADXL_ADDR);
-  Wire.write(reg);
-  Wire.write(value);
-  Wire.endTransmission();
-}
-
-float readX()
-{
-  if (check == 1)
-  {
-    /* code */
-
-    byte lowByte, highByte;
-    int16_t value;
-
-    Wire.beginTransmission(ADXL_ADDR);
-    Wire.write(0x32);
-    Wire.endTransmission();
-    Wire.requestFrom(ADXL_ADDR, 2);
-
-    lowByte = Wire.read();
-    highByte = Wire.read() & 0x03;
-
-    value = (highByte << 8) + lowByte;
-    if (value > 511)
-      value -= 1024;
-    return value * SCALE;
-  }
-}
-
-void checkValue()
-
-{
-if(check == 1){
-  
-  if (x >= 0.70 && x <= 1.10)
-  {
-    digitalWrite(LED_PIN2, LOW);
-    // Serial.println("CERTO");
-  }
-  else 
-  {
-
-    //  Serial.println("ERRADO");
-    digitalWrite(LED_PIN2, HIGH);
-    delay(500);
-    digitalWrite(LED_PIN2, LOW);
-  }
-}
-}
-
-void ldr()
-{
-  if (check1 == 1)
-  {
-
-    if (ldrValue < 1000)
-    {
-      digitalWrite(LED_PIN1, HIGH);
-    }
-    else
-    {
-      digitalWrite(LED_PIN1, LOW);
-    }
-
-    if (check1 == 0)
-    {
-    digitalWrite(LED_PIN1, LOW);
-    }
-  
-
-  }
-}
 
 void act()
 {
@@ -151,44 +63,35 @@ void act()
   switch (value)
   {
   case 1:
-    digitalWrite(LED_PIN, HIGH);
+  
     break;
   case 2:
-    digitalWrite(LED_PIN, LOW);
+    
     break;
   
  case 3:
-    check = 0;
-    SerialBT.println("Giroscopio desativado");
-    delay(650);
+    
     break;
 
   case 4:
-    check = 1;
-    SerialBT.print(x);
-    delay(650);
+    
+    
      break;
 
   case 5:
-    check1 = 0;
-    SerialBT.println("LDR Desativada");
-    delay(650);
+   
+    
     break;
 
   case 6:
-    check1 = 1;
-    SerialBT.println(ldrValue);
+    
+    
     delay(650);
     break;
 
   case 7 :
-    SerialBT.println("Menu Resetado!");
-    check = 0;
-    check1 = 0;
-     digitalWrite(LED_PIN, LOW);
-     digitalWrite(LED_PIN1, LOW);
-     digitalWrite(LED_PIN2, LOW);
-    delay(650);
+   
+    
     break;
   }
 }
@@ -198,7 +101,7 @@ void fact()
 
   if (message == "1")
   {
-    digitalWrite(LED_PIN, HIGH);
+    
     value = 1;
     message = "";
   }
@@ -206,14 +109,14 @@ void fact()
   if (message == "2")
   {
 
-    digitalWrite(LED_PIN, LOW);
+    
     value = 2;
     message = "";
   }
 
   if (message == "3")
   {
-    digitalWrite(LED_PIN, LOW);
+
     value = 3;
     message = "";
   }
